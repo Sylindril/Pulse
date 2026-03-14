@@ -133,9 +133,10 @@ export function CaptureOverlay({ isOpen, onClose, onSave, hasRecentEntry }: Prop
                         speech.stop()
                         setUseTextMode(true)
                       }}
-                      className="px-4 py-2 rounded-lg text-white/60 hover:text-white/80 transition"
+                      className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-white/60 hover:text-white/80 transition text-sm"
                     >
-                      <Keyboard size={20} />
+                      <Keyboard size={16} />
+                      Type instead
                     </button>
                   )}
                   <button
