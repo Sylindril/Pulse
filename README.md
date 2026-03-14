@@ -22,7 +22,7 @@ Read the full story: [`STORY.md`](STORY.md)
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/Sylindril/Pulse.git
+git clone git@github.com:Sylindril/Pulse.git
 cd Pulse
 
 # 2. Create and activate the conda environment
