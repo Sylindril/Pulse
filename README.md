@@ -2,7 +2,7 @@
 
 **MIT GrandHacks 2025**
 
-Patients forget symptoms, suffer recency bias in 15-minute doctor visits, and pain scores are unreliable. Pulse lets patients capture symptoms *in the moment* — a quick gesture, a spoken description, logged with timestamp and wearable context. The result: a rich narrative timeline doctors can actually use.
+Patients forget symptoms, suffer recency bias in 15-minute doctor visits, and pain scores are unreliable. Pulse lets patients capture symptoms *in the moment* — a quick gesture, a spoken description, logged with timestamp and wearable context. The result: a rich narrative timeline you can read from your phone before walking into the doctor's office.
 
 ## Quick Start
 
@@ -14,8 +14,8 @@ Patients forget symptoms, suffer recency bias in 15-minute doctor visits, and pa
 
 ```bash
 # 1. Clone the repo
-git clone <repo-url>
-cd symptom-snap
+git clone https://github.com/Sylindril/Pulse.git
+cd Pulse/symptom-snap
 
 # 2. Create and activate the conda environment
 conda create -n pulse python=3.12 nodejs -y
@@ -36,31 +36,33 @@ Open **http://localhost:5173** in your browser.
 
 | Route | What it is |
 |-------|-----------|
-| `/` | **Patient view** — capture symptoms with voice or text |
-| `/doctor` | **Doctor timeline** — dark-mode clinician dashboard with wearable data |
-| `/shared/:token` | **Shared view** — read-only timeline link for sharing |
+| `/` | **Capture** — log symptoms with voice or text |
+| `/doctor` | **My Timeline** — your symptom history, summary, and wearable data |
+| `/shared/:token` | **Shared view** — read-only link to share with your doctor |
 
 ## How to Use
 
-### Capturing a Symptom (Patient View)
+### Capturing a Symptom
 1. **Long-press** the central circle for 1.2 seconds (or tap "or tap to record")
-2. **Speak** your symptom — words appear in real-time
+2. **Speak** your symptom — words appear in real-time (or tap "Type instead")
 3. Tap **Done** when finished
 4. Rate **severity** (1-10 slider) — optional, tap Skip to default to 5
-5. Tap how it **compares** to before: Better / Same / Worse / Worst ever
+5. If you've logged a similar symptom recently: tap how it **compares** (Better / Same / Worse / Worst ever)
 6. Green checkmark — logged!
 
-### Viewing the Timeline (Doctor View)
-- Navigate to `/doctor` to see the full patient timeline
+### Viewing Your Timeline
+- Navigate to `/doctor` (or tap "My timeline" on the capture page)
+- **Summary** button generates a readable narrative of your symptom history — great to review before a doctor visit
 - Summary panel shows entry count, avg severity, most common area, trend
 - Heart rate sparkline shows 14-day wearable data with symptom markers
-- Each entry shows transcription, severity, comparison, body area, and wearable snapshot
-- **Share** button generates a read-only link
-- **Reset** button (circular arrow icon) reloads the demo dataset
+- Each entry shows transcription, severity, comparison, body area, and vitals snapshot (frozen at recording time)
+- **Edit/delete** entries on hover (pencil/trash icons)
+- **Share** button generates a read-only link for your doctor
+- **Reset** button (circular arrow) reloads the demo dataset
 
 ## Editing Demo Data
 
-The demo dataset lives in **`src/data/demo-entries.ts`**. It's a simple array of symptom entries for "Sarah M." showing escalating headaches over 2 weeks.
+The demo dataset lives in **`src/data/demo-entries.ts`**. It's a simple array of symptom entries showing escalating headaches over 2 weeks.
 
 ### Adding/editing entries
 
@@ -72,8 +74,9 @@ Each entry looks like this:
   userId: 'demo-user',             // keep as 'demo-user'
   transcription: 'Your symptom description here',
   severity: 6,                     // 1-10 scale
-  comparison: 'worse',             // 'better' | 'same' | 'worse' | 'worst'
+  comparison: 'worse',             // 'better' | 'same' | 'worse' | 'worst' (optional)
   bodyArea: 'head',                // head, stomach, chest, back, neck, legs, arms, throat, general
+  vitals: { heartRate: 88, bloodOxygen: 97.1 }, // frozen at recording time
   recordedAt: day(5, 14),          // day(daysAgo, hour) — e.g., day(5, 14) = 5 days ago at 2pm
   createdAt: day(5, 14),           // same as recordedAt
 }
@@ -90,12 +93,12 @@ day(daysAgo, hour)
 
 ### Wearable data
 
-Wearable data is **auto-generated** from symptom entries in `src/data/demo-wearable.ts`. It correlates heart rate, SpO2, and steps with symptom severity — no need to edit this manually. Higher severity = higher HR spike, lower SpO2, fewer steps.
+Each entry has `vitals` (heart rate + SpO2) baked in at recording time — these never change. The wearable strip chart at the top of the timeline uses auto-generated background data for the continuous trend view.
 
 ### Resetting demo data in the browser
 
 The app caches entries in localStorage. After editing `demo-entries.ts`:
-1. Click the reset button (circular arrow) on the `/doctor` page, OR
+1. Click the reset button (circular arrow) on the timeline page, OR
 2. Open DevTools → Application → Local Storage → delete `pulse-symptom-entries`
 
 ## Tech Stack
@@ -119,6 +122,7 @@ src/
 ├── lib/
 │   ├── supabase.ts                   # Supabase client (optional)
 │   ├── speech.ts                     # Web Speech API wrapper
+│   ├── summary.ts                    # Narrative summary generator
 │   └── mock-wearable.ts             # Wearable data utilities
 ├── hooks/
 │   ├── useGesture.ts                 # Long-press detection + progress ring
@@ -135,8 +139,8 @@ src/
 │       ├── SummaryPanel.tsx          # Stats at top
 │       └── WearableStrip.tsx         # HR sparkline chart
 ├── pages/
-│   ├── PatientHome.tsx               # Patient capture page
-│   ├── DoctorTimeline.tsx            # Clinician dashboard
+│   ├── PatientHome.tsx               # Capture page
+│   ├── DoctorTimeline.tsx            # Timeline + summary page
 │   └── SharedView.tsx                # Read-only shared view
 └── data/
     ├── demo-entries.ts               # ← EDIT THIS for demo data
