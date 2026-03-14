@@ -1,5 +1,10 @@
 export type Comparison = 'better' | 'same' | 'worse' | 'worst'
 
+export interface Vitals {
+  heartRate: number
+  bloodOxygen: number
+}
+
 export interface SymptomEntry {
   id: string
   userId: string
@@ -7,6 +12,7 @@ export interface SymptomEntry {
   severity: number
   comparison?: Comparison
   bodyArea: string
+  vitals?: Vitals // snapshot frozen at recording time
   recordedAt: string // ISO date string
   createdAt: string
 }
@@ -27,6 +33,7 @@ export const demoEntries: SymptomEntry[] = [
     severity: 3,
     comparison: undefined, // first entry, no comparison
     bodyArea: 'head',
+    vitals: { heartRate: 74, bloodOxygen: 98.2 },
     recordedAt: day(14, 13),
     createdAt: day(14, 13),
   },
@@ -37,6 +44,7 @@ export const demoEntries: SymptomEntry[] = [
     severity: 4,
     comparison: 'worse',
     bodyArea: 'head',
+    vitals: { heartRate: 82, bloodOxygen: 97.8 },
     recordedAt: day(12, 7),
     createdAt: day(12, 7),
   },
@@ -47,6 +55,7 @@ export const demoEntries: SymptomEntry[] = [
     severity: 6,
     comparison: 'worse',
     bodyArea: 'head',
+    vitals: { heartRate: 88, bloodOxygen: 97.1 },
     recordedAt: day(10, 16),
     createdAt: day(10, 16),
   },
@@ -57,6 +66,7 @@ export const demoEntries: SymptomEntry[] = [
     severity: 5,
     comparison: 'same',
     bodyArea: 'stomach',
+    vitals: { heartRate: 85, bloodOxygen: 97.4 },
     recordedAt: day(9, 12),
     createdAt: day(9, 12),
   },
@@ -67,6 +77,7 @@ export const demoEntries: SymptomEntry[] = [
     severity: 8,
     comparison: 'worst',
     bodyArea: 'head',
+    vitals: { heartRate: 96, bloodOxygen: 96.1 },
     recordedAt: day(7, 14),
     createdAt: day(7, 14),
   },
@@ -77,6 +88,7 @@ export const demoEntries: SymptomEntry[] = [
     severity: 7,
     comparison: 'worse',
     bodyArea: 'head',
+    vitals: { heartRate: 101, bloodOxygen: 95.8 },
     recordedAt: day(5, 10),
     createdAt: day(5, 10),
   },
@@ -87,6 +99,7 @@ export const demoEntries: SymptomEntry[] = [
     severity: 5,
     comparison: 'better',
     bodyArea: 'neck',
+    vitals: { heartRate: 78, bloodOxygen: 97.9 },
     recordedAt: day(4, 8),
     createdAt: day(4, 8),
   },
@@ -97,6 +110,7 @@ export const demoEntries: SymptomEntry[] = [
     severity: 7,
     comparison: 'worse',
     bodyArea: 'head',
+    vitals: { heartRate: 94, bloodOxygen: 96.3 },
     recordedAt: day(2, 15),
     createdAt: day(2, 15),
   },
@@ -107,6 +121,7 @@ export const demoEntries: SymptomEntry[] = [
     severity: 9,
     comparison: 'worst',
     bodyArea: 'head',
+    vitals: { heartRate: 105, bloodOxygen: 95.2 },
     recordedAt: day(1, 18),
     createdAt: day(1, 18),
   },
@@ -117,6 +132,7 @@ export const demoEntries: SymptomEntry[] = [
     severity: 6,
     comparison: 'same',
     bodyArea: 'head',
+    vitals: { heartRate: 89, bloodOxygen: 96.7 },
     recordedAt: day(0, 8),
     createdAt: day(0, 8),
   },

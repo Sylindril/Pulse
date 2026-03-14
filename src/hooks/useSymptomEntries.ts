@@ -24,8 +24,16 @@ export function useSymptomEntries() {
   }, [entries])
 
   const addEntry = useCallback((entry: Omit<SymptomEntry, 'id' | 'userId' | 'createdAt'>) => {
+    // Generate mock vitals snapshot frozen at recording time
+    const severityFactor = (entry.severity || 5) / 10
+    const vitals = entry.vitals ?? {
+      heartRate: Math.round(72 + severityFactor * 30 + (Math.random() * 6 - 3)),
+      bloodOxygen: Math.round((98 - severityFactor * 3 + (Math.random() * 0.6 - 0.3)) * 10) / 10,
+    }
+
     const newEntry: SymptomEntry = {
       ...entry,
+      vitals,
       id: crypto.randomUUID(),
       userId: 'demo-user',
       createdAt: new Date().toISOString(),

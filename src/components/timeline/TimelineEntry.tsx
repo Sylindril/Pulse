@@ -2,17 +2,15 @@ import { useState } from 'react'
 import { motion } from 'motion/react'
 import { Clock, MapPin, Heart, TrendingDown, ArrowRight, TrendingUp, AlertTriangle, Trash2, Pencil, Check, X } from 'lucide-react'
 import type { SymptomEntry, Comparison } from '../../data/demo-entries'
-import type { WearableSnapshot } from '../../data/demo-wearable'
 
 interface Props {
   entry: SymptomEntry
-  snapshot: WearableSnapshot | null
   index: number
   onDelete?: (id: string) => void
   onEdit?: (id: string, updates: Partial<SymptomEntry>) => void
 }
 
-export function TimelineEntry({ entry, snapshot, index, onDelete, onEdit }: Props) {
+export function TimelineEntry({ entry, index, onDelete, onEdit }: Props) {
   const date = new Date(entry.recordedAt)
   const severityColor = getSeverityColor(entry.severity)
   const comparisonInfo = entry.comparison ? getComparisonInfo(entry.comparison) : null
@@ -125,14 +123,14 @@ export function TimelineEntry({ entry, snapshot, index, onDelete, onEdit }: Prop
             </span>
           )}
 
-          {snapshot && (
+          {entry.vitals && (
             <>
               <span className="flex items-center gap-1 text-xs text-red-400/80 bg-red-900/20 px-2 py-1 rounded-full">
                 <Heart size={10} />
-                {snapshot.heartRate} bpm
+                {entry.vitals.heartRate} bpm
               </span>
               <span className="text-xs text-blue-400/80 bg-blue-900/20 px-2 py-1 rounded-full">
-                SpO2 {snapshot.bloodOxygen}%
+                SpO2 {entry.vitals.bloodOxygen}%
               </span>
             </>
           )}
