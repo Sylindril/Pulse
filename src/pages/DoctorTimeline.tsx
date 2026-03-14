@@ -1,14 +1,16 @@
 import { useState } from 'react'
 import { motion } from 'motion/react'
-import { Activity, Share2, RotateCcw, ArrowLeft, Copy, Check } from 'lucide-react'
+import { Activity, Share2, RotateCcw, ArrowLeft, Copy, Check, FileText } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useSymptomEntries } from '../hooks/useSymptomEntries'
 import { TimelineView } from '../components/timeline/TimelineView'
+import { generateSummary } from '../lib/summary'
 
 export function DoctorTimeline() {
   const { entries, deleteEntry, editEntry, resetToDemo } = useSymptomEntries()
   const [shareUrl, setShareUrl] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
+  const [showSummary, setShowSummary] = useState(false)
 
   const handleShare = () => {
     const token = crypto.randomUUID().slice(0, 8)
@@ -23,6 +25,8 @@ export function DoctorTimeline() {
       setTimeout(() => setCopied(false), 2000)
     }
   }
+
+  const summary = generateSummary(entries)
 
   return (
     <div className="min-h-screen bg-pulse-darker text-white">
@@ -39,12 +43,22 @@ export function DoctorTimeline() {
             </Link>
             <Activity className="text-indigo-400" size={24} />
             <div>
-              <h1 className="text-xl font-bold">Patient Timeline</h1>
-              <p className="text-xs text-slate-400">Sarah M. — Demo Patient</p>
+              <h1 className="text-xl font-bold">My Timeline</h1>
+              <p className="text-xs text-slate-400">Your symptom history</p>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowSummary(!showSummary)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm transition ${
+                showSummary ? 'bg-indigo-500 text-white' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
+              }`}
+              title="Quick summary"
+            >
+              <FileText size={14} />
+              Summary
+            </button>
             <button
               onClick={handleShare}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-sm transition"
@@ -61,6 +75,19 @@ export function DoctorTimeline() {
             </button>
           </div>
         </motion.div>
+
+        {/* Summary panel */}
+        {showSummary && summary && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="bg-indigo-950/40 border border-indigo-800/40 rounded-xl p-4 mb-6"
+          >
+            <h2 className="text-sm font-semibold text-indigo-300 mb-2">Summary since {summary.periodLabel}</h2>
+            <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-line">{summary.text}</p>
+          </motion.div>
+        )}
 
         {/* Share link banner */}
         {shareUrl && (

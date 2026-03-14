@@ -97,7 +97,7 @@ export function PatientHome() {
               to="/doctor"
               className="text-xs text-indigo-500 hover:text-indigo-700 flex items-center gap-1"
             >
-              View timeline <ArrowRight size={12} />
+              My timeline <ArrowRight size={12} />
             </Link>
           </div>
 
