@@ -4,20 +4,23 @@ import { Mic, X, Check, Keyboard } from 'lucide-react'
 import { useSpeechRecognition } from '../../hooks/useSpeechRecognition'
 import { VoiceVisualizer } from './VoiceVisualizer'
 import { SeveritySlider } from './SeveritySlider'
-import type { Comparison } from '../../data/demo-entries'
+import type { Comparison, SymptomEntry } from '../../data/demo-entries'
 
 type CaptureStep = 'recording' | 'severity' | 'done'
+
+const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000
 
 interface Props {
   isOpen: boolean
   onClose: () => void
   onSave: (data: { transcription: string; severity: number; comparison?: Comparison; bodyArea: string }) => void
-  hasRecentEntry?: boolean
+  entries: SymptomEntry[]
 }
 
-export function CaptureOverlay({ isOpen, onClose, onSave, hasRecentEntry }: Props) {
+export function CaptureOverlay({ isOpen, onClose, onSave, entries }: Props) {
   const [step, setStep] = useState<CaptureStep>('recording')
   const [finalText, setFinalText] = useState('')
+  const [detectedBodyArea, setDetectedBodyArea] = useState('general')
   const [textInput, setTextInput] = useState('')
   const [useTextMode, setUseTextMode] = useState(false)
   const speech = useSpeechRecognition()
@@ -43,19 +46,27 @@ export function CaptureOverlay({ isOpen, onClose, onSave, hasRecentEntry }: Prop
     speech.stop()
     const text = useTextMode ? textInput : speech.fullTranscript
     if (text.trim()) {
-      setFinalText(text.trim())
+      const trimmed = text.trim()
+      setFinalText(trimmed)
+      setDetectedBodyArea(guessBodyArea(trimmed))
       setStep('severity')
     } else {
       onClose()
     }
   }
 
+  // Only show comparison if there's a recent entry with the same body area
+  const hasRecentSimilarEntry = entries.some(e =>
+    e.bodyArea === detectedBodyArea &&
+    (Date.now() - new Date(e.recordedAt).getTime()) < SEVEN_DAYS
+  )
+
   const handleComplete = (severity: number, comparison?: Comparison) => {
     onSave({
       transcription: finalText,
       severity,
       comparison,
-      bodyArea: guessBodyArea(finalText),
+      bodyArea: detectedBodyArea,
     })
     setStep('done')
     setTimeout(() => {
@@ -157,7 +168,7 @@ export function CaptureOverlay({ isOpen, onClose, onSave, hasRecentEntry }: Prop
                 exit={{ opacity: 0 }}
               >
                 <p className="text-white/80 text-center mb-2 text-sm italic">"{finalText}"</p>
-                <SeveritySlider onSelect={handleComplete} onSkip={handleSkip} hasRecentEntry={hasRecentEntry} />
+                <SeveritySlider onSelect={handleComplete} onSkip={handleSkip} hasRecentEntry={hasRecentSimilarEntry} />
               </motion.div>
             )}
 

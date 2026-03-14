@@ -17,11 +17,6 @@ export function PatientHome() {
 
   const recentEntries = entries.slice(0, 3)
 
-  // Only show comparison question if there's an entry within the last 7 days
-  const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000
-  const hasRecentEntry = entries.length > 0 &&
-    (Date.now() - new Date(entries[0].recordedAt).getTime()) < SEVEN_DAYS
-
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8 bg-gradient-to-b from-slate-50 to-slate-100">
       {/* Header */}
@@ -141,7 +136,7 @@ export function PatientHome() {
       <CaptureOverlay
         isOpen={captureOpen}
         onClose={() => setCaptureOpen(false)}
-        hasRecentEntry={hasRecentEntry}
+        entries={entries}
         onSave={(data) => {
           addEntry({
             ...data,
