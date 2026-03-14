@@ -6,7 +6,7 @@ import { useSymptomEntries } from '../hooks/useSymptomEntries'
 import { TimelineView } from '../components/timeline/TimelineView'
 
 export function DoctorTimeline() {
-  const { entries, resetToDemo } = useSymptomEntries()
+  const { entries, deleteEntry, editEntry, resetToDemo } = useSymptomEntries()
   const [shareUrl, setShareUrl] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
 
@@ -84,7 +84,7 @@ export function DoctorTimeline() {
         )}
 
         {/* Timeline */}
-        <TimelineView entries={entries} />
+        <TimelineView entries={entries} onDelete={deleteEntry} onEdit={editEntry} />
       </div>
     </div>
   )

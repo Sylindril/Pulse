@@ -8,9 +8,11 @@ import { WearableStrip } from './WearableStrip'
 
 interface Props {
   entries: SymptomEntry[]
+  onDelete?: (id: string) => void
+  onEdit?: (id: string, updates: Partial<SymptomEntry>) => void
 }
 
-export function TimelineView({ entries }: Props) {
+export function TimelineView({ entries, onDelete, onEdit }: Props) {
   const wearableData = useMemo(() => generateWearableData(entries), [entries])
 
   return (
@@ -30,6 +32,8 @@ export function TimelineView({ entries }: Props) {
               entry={entry}
               snapshot={getSnapshotForEntry(entry, wearableData)}
               index={i}
+              onDelete={onDelete}
+              onEdit={onEdit}
             />
           ))
         )}

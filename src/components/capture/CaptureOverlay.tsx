@@ -4,16 +4,18 @@ import { Mic, X, Check, Keyboard } from 'lucide-react'
 import { useSpeechRecognition } from '../../hooks/useSpeechRecognition'
 import { VoiceVisualizer } from './VoiceVisualizer'
 import { SeveritySlider } from './SeveritySlider'
+import type { Comparison } from '../../data/demo-entries'
 
 type CaptureStep = 'recording' | 'severity' | 'done'
 
 interface Props {
   isOpen: boolean
   onClose: () => void
-  onSave: (data: { transcription: string; severity: number; bodyArea: string }) => void
+  onSave: (data: { transcription: string; severity: number; comparison?: Comparison; bodyArea: string }) => void
+  hasRecentEntry?: boolean
 }
 
-export function CaptureOverlay({ isOpen, onClose, onSave }: Props) {
+export function CaptureOverlay({ isOpen, onClose, onSave, hasRecentEntry }: Props) {
   const [step, setStep] = useState<CaptureStep>('recording')
   const [finalText, setFinalText] = useState('')
   const [textInput, setTextInput] = useState('')
@@ -48,10 +50,11 @@ export function CaptureOverlay({ isOpen, onClose, onSave }: Props) {
     }
   }
 
-  const handleSeverity = (severity: number) => {
+  const handleComplete = (severity: number, comparison?: Comparison) => {
     onSave({
       transcription: finalText,
       severity,
+      comparison,
       bodyArea: guessBodyArea(finalText),
     })
     setStep('done')
@@ -61,17 +64,8 @@ export function CaptureOverlay({ isOpen, onClose, onSave }: Props) {
     }, 1200)
   }
 
-  const handleSkipSeverity = () => {
-    onSave({
-      transcription: finalText,
-      severity: 5,
-      bodyArea: guessBodyArea(finalText),
-    })
-    setStep('done')
-    setTimeout(() => {
-      onClose()
-      setStep('recording')
-    }, 1200)
+  const handleSkip = () => {
+    handleComplete(5)
   }
 
   return (
@@ -162,7 +156,7 @@ export function CaptureOverlay({ isOpen, onClose, onSave }: Props) {
                 exit={{ opacity: 0 }}
               >
                 <p className="text-white/80 text-center mb-2 text-sm italic">"{finalText}"</p>
-                <SeveritySlider onSelect={handleSeverity} onSkip={handleSkipSeverity} />
+                <SeveritySlider onSelect={handleComplete} onSkip={handleSkip} hasRecentEntry={hasRecentEntry} />
               </motion.div>
             )}
 

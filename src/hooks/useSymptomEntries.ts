@@ -34,6 +34,14 @@ export function useSymptomEntries() {
     return newEntry
   }, [])
 
+  const deleteEntry = useCallback((id: string) => {
+    setEntries(prev => prev.filter(e => e.id !== id))
+  }, [])
+
+  const editEntry = useCallback((id: string, updates: Partial<SymptomEntry>) => {
+    setEntries(prev => prev.map(e => e.id === id ? { ...e, ...updates } : e))
+  }, [])
+
   const resetToDemo = useCallback(() => {
     const fresh = [...demoEntries]
     setEntries(fresh)
@@ -45,5 +53,5 @@ export function useSymptomEntries() {
     (a, b) => new Date(b.recordedAt).getTime() - new Date(a.recordedAt).getTime()
   )
 
-  return { entries: sorted, addEntry, resetToDemo }
+  return { entries: sorted, addEntry, deleteEntry, editEntry, resetToDemo }
 }
