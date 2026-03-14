@@ -23,7 +23,7 @@ Read the full story: [`STORY.md`](STORY.md)
 ```bash
 # 1. Clone the repo
 git clone https://github.com/Sylindril/Pulse.git
-cd Pulse/symptom-snap
+cd Pulse
 
 # 2. Create and activate the conda environment
 conda create -n pulse python=3.12 nodejs -y
